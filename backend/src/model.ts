@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 // usuarios
@@ -10,7 +10,7 @@ const usuariosSchema = new mongoose.Schema({
   tipo: String,
 });
 
-const Usuarios = mongoose.model('usuarios', usuariosSchema);
+const Usuarios = mongoose.model("usuarios", usuariosSchema);
 
 // doacoes
 
@@ -19,7 +19,7 @@ const DoacoesSchema = new mongoose.Schema({
   categoria: String,
 });
 
-const Doacoes = mongoose.model('doacoes', DoacoesSchema);
+const Doacoes = mongoose.model("doacoes", DoacoesSchema);
 
 // demandas
 
@@ -27,20 +27,21 @@ const DemandasSchema = new mongoose.Schema({
   abrigo: String,
   doacoes: Schema.Types.Mixed,
   voluntarios: Schema.Types.Mixed,
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
 });
 
-const Demandas = mongoose.model('demandas', DemandasSchema);
-
+const Demandas = mongoose.model("demandas", DemandasSchema);
 
 // voluntarios
 
 const VoluntariosSchema = new mongoose.Schema({
-  area: String
+  area: String,
 });
 
-const Voluntarios = mongoose.model('areaVoluntarios', VoluntariosSchema, 'areaVoluntarios');
+const Voluntarios = mongoose.model(
+  "areaVoluntarios",
+  VoluntariosSchema,
+  "areaVoluntarios"
+);
 
-module.exports = {
-    Usuarios, Doacoes,Demandas, Voluntarios
-};
+export { Usuarios, Doacoes, Demandas, Voluntarios };
