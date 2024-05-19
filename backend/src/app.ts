@@ -1,53 +1,44 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const apiRoutes = require("./api");
-const path = require("path");
-const cors = require("cors");
-const dotenv = require("dotenv").config({
-  path: path.resolve(__dirname, "../.env"),
-});
+import cors from "cors";
+import express from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+
+import apiRoutes from "@/api";
+import { delay } from "@/lib/helper/delay.helper";
+import { getCurrentDate } from "@/lib/helper/moment.helper";
+import { allowedOrigins } from "@/lib/config/allowed-origins.config";
+import { APP_CONFIG, DATABASE_URI } from "@/lib/config/env.config";
 
 const app = express();
-const port = 1339;
 
 app.use(bodyParser.json());
 
-// Configure CORS
-app.use(
-  cors({
-    origin: [
-      "http://localhost:80",
-      "http://172.19.0.3:80",
-      "http://18.189.245.198:80",
-      "http://ajudaabrigospoa.com.br",
-    ],
-  }),
-);
+app.use(cors({ origin: allowedOrigins }));
 
 app.use("/api", apiRoutes);
 
 const connect = async () => {
-  const uri = process.env.MONGO;
-  if (!uri) {
-    throw new Error("MongoDB URI not found in environment variables");
-  }
-
   let isConnected = false;
 
   do {
     if (mongoose.connection.readyState !== 1) {
       try {
-        await mongoose.connect(uri, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        });
-        console.log("Connected to MongoDB !!!");
+        mongoose.connect(DATABASE_URI);
+
+        console.log(`${getCurrentDate()} - Connected to MongoDB`);
+
         isConnected = true;
       } catch (err) {
-        console.log(err);
-        console.log("DB Timeout - Retrying in 5 seconds...");
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        console.error(
+          `${getCurrentDate()} - ERROR - Error to connect in Database. MESSAGE: ` +
+            err
+        );
+
+        console.warn(
+          `${getCurrentDate()} - WARN - Database Timeout - Retrying in 5 seconds...`
+        );
+
+        await delay(5000);
       }
     } else {
       isConnected = true;
@@ -55,7 +46,7 @@ const connect = async () => {
   } while (!isConnected);
 };
 
-app.listen(port, async () => {
-  console.log("Server running on port 1339");
+app.listen(APP_CONFIG.port, async () => {
+  console.log("Server running on port ");
   await connect();
 });

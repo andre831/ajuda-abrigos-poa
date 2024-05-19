@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import { Usuarios, Doacoes, Demandas, Voluntarios } from "@/model";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "./lib/config/env.config";
 
 router.get("/doacoes", async (req, res) => {
   try {
@@ -82,9 +83,8 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    const token = jwt.sign({ userId: userData._id }, "Td?B75q0uOX");
+    const token = jwt.sign({ userId: userData._id }, JWT_SECRET);
 
-    console.log("Login successful:", token);
     res.status(200).json({ message: "Login successful", userData, token });
   } catch (err) {
     console.error(err);

@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "./lib/config/env.config";
 // import config from "@/";
 
-exports.authenticateToken = (req, res, next) => {
+export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, config.jwtSecret, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
